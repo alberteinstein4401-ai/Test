@@ -127,7 +127,22 @@ This generates a report for the inclusive date range without automatic schedulin
    cp .env.example .env
    ```
 
-3. **Volume permissions**: If you encounter permission errors with mounted volumes, either adjust the host directory permissions or configure the container user in your Docker Compose file. The example environment file no longer includes `AIRFLOW_UID`/`AIRFLOW_GID` by default.
+3. **Volume permissions**: If you encounter permission errors with mounted volumes, prefer setting `AIRFLOW_UID` and `AIRFLOW_GID` in your `.env` so the container runs as the same host user. Add these lines to your `.env`, replacing the values with your host's UID/GID:
+   ```bash
+   AIRFLOW_UID=1000
+   AIRFLOW_GID=1000
+   ```
+
+   Determine your host UID/GID with:
+   ```bash
+   id -u
+   id -g
+   ```
+
+   If you do not set these, the container will use the image default user and you may need to adjust host directory ownership instead, for example:
+   ```bash
+   sudo chown -R $(id -u):$(id -g) airflow/logs airflow/reports
+   ```
 
 5. **Configure AWS credentials in `.env`:**
    ```
