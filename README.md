@@ -37,8 +37,8 @@ This project automates the process of generating lesson completion reports for M
                         ┌─────────────────────┼─────────────────────┐
                         │                     │                     │
                         ↓                     ↓                     ↓
-                Local Reports Dir         AWS S3                  AWS SES
-                   (airflow/reports/)     (upload)              (email)
+                     Local Reports Dir         AWS S3                  AWS SES
+                         (/opt/airflow/reports)     (upload)              (email)
 ```
 
 ### Technology Stack
@@ -60,7 +60,7 @@ This project automates the process of generating lesson completion reports for M
 4. **Deduplicate**: Remove duplicate entries using `completion_id`
 5. **Aggregate**: Group completions by user and date, counting lessons per user per day
 6. **Generate CSV**: Create report with columns: `Name`, `Number of lessons completed`, `Date`
-7. **Save Locally**: Store report in `airflow/reports/`
+7. **Save Locally**: Store report in the container reports directory at `/opt/airflow/reports`.
 8. **Upload**: Push report to S3 bucket
 9. **Email**: Send report as attachment via SES
 
@@ -139,7 +139,7 @@ This generates a report for the inclusive date range without automatic schedulin
    id -g
    ```
 
-   If you do not set these, the container will use the image default user and you may need to adjust host directory ownership instead, for example:
+   If you do not set these, the container will use the image default user and you may need to adjust host directory ownership instead. For example, if you bind the container reports directory `/opt/airflow/reports` to `./airflow/reports` on the host:
    ```bash
    sudo chown -R $(id -u):$(id -g) airflow/logs airflow/reports
    ```
@@ -264,7 +264,8 @@ AIRFLOW_ADMIN_EMAIL=admin@example.com
 
 **Report Storage:**
 ```
-REPORT_OUTPUT_DIR=/opt/airflow/reports
+# The report output directory inside the Airflow container (fixed)
+# REPORT_OUTPUT_DIR=/opt/airflow/reports
 ```
 
 ## 📝 Usage Examples
@@ -320,7 +321,7 @@ lesson_completion_report_{start_date}_{end_date}.csv
 
 **Storage Locations:**
 
-- **Local**: `airflow/reports/lesson_completion_report_{start_date}_{end_date}.csv`
+- **Local**: `/opt/airflow/reports/lesson_completion_report_{start_date}_{end_date}.csv`
 - **S3**: `s3://{S3_REPORT_BUCKET}/{S3_REPORT_PREFIX}/lesson_completion_report_{start_date}_{end_date}.csv`
   - The `S3_REPORT_PREFIX` is the **generation date** (YYYY-MM-DD format)
   - Example: `s3://mindtickle-reports/2026-06-20/lesson_completion_report_2026-06-20_2026-06-20.csv`
