@@ -182,7 +182,21 @@ This generates a report for the inclusive date range without automatic schedulin
      ```
 
 9. **Verify outputs:**
-   - Check `airflow/reports/` for generated CSV files
+   - Check generated reports inside the Airflow container at `/opt/airflow/reports` (container path). To list files:
+
+      ```bash
+      docker compose exec airflow ls -la /opt/airflow/reports
+      ```
+
+      If you prefer to access reports on the host, set `REPORT_OUTPUT_DIR` in your `.env` to a host-mounted path before starting the stack.
+
+   - Alternatively, inspect the named Docker volume `airflow_reports` and list its contents:
+
+      ```bash
+      docker volume inspect airflow_reports
+      docker run --rm -v airflow_reports:/data alpine ls -la /data
+      ```
+
    - Monitor S3 bucket for uploaded reports
    - Verify email delivery in SES sent items
    - Check recipient inbox spam/junk folders if the report does not appear in the main inbox
