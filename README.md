@@ -129,8 +129,8 @@ This generates a report for the inclusive date range without automatic schedulin
 
 3. **Volume permissions**: If you encounter permission errors with mounted volumes, prefer setting `AIRFLOW_UID` and `AIRFLOW_GID` in your `.env` so the container runs as the same host user. Add these lines to your `.env`, replacing the values with your host's UID/GID:
    ```bash
-   AIRFLOW_UID=1000
-   AIRFLOW_GID=1000
+   AIRFLOW_UID=<your_uid>
+   AIRFLOW_GID=<your_gid>
    ```
 
    Determine your host UID/GID with:
